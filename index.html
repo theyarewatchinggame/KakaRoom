@@ -132,27 +132,34 @@
       }
     }
 
-   /* 手機橫向：不滿版、可上下滑動 */
+   /* 手機橫向：不滿版、可上下滑動、防止裁切 */
     @media (orientation: landscape) and (max-width: 1024px) {
       html, body {
-        overflow-y: auto !important; /* 強制開啟垂直捲軸 */
+        overflow-y: auto !important; /* 保留垂直捲軸 */
         height: auto !important;
       }
 
       #page-wrap {
-        display: block; /* 關鍵：取消 flex 排版，讓網頁恢復正常的上下滾動特性 */
+        display: block; 
         min-height: 100vh; 
-        padding: 40px 0; /* 上下留黑邊，確保網頁整體高度足夠產生滾動條 */
+        padding: 30px 0; /* 上下留點黑邊 */
         box-sizing: border-box;
       }
 
       #unity-container {
-        width: 85vw; /* 寬度佔螢幕 85%，不滿版，左右會留黑邊 */
-        height: auto; 
-        aspect-ratio: 960 / 600; /* 嚴格維持遊戲畫面比例 */
-        max-height: none; /* 取消高度限制，讓它根據寬度自然長高 */
-        margin: 0 auto; /* 水平置中 */
+        width: 85vw; /* 遊戲畫面佔螢幕寬度的 85% */
+        /* 關鍵 1：放棄 height: auto，直接用數學精準計算高度 (85vw * 600/960) */
+        height: calc(85vw * 0.625); 
+        max-height: none; 
+        margin: 0 auto; 
         position: relative;
+      }
+
+      #unity-canvas {
+        /* 關鍵 2：加上 !important 強制覆蓋 Unity JS 寫死的 960px */
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain; /* 確保內容按比例縮放不變形 */
       }
       
       #unity-footer {
