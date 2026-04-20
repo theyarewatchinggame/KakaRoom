@@ -132,27 +132,35 @@
       }
     }
 
-   /* 手機橫向：修改對齊方式並調整比例，允許上下滑動 */
+   /* 手機橫向：修正滑動與比例 */
     @media (orientation: landscape) and (max-width: 1024px) {
       body {
-        /* 改為 flex-start，讓內容從頂部開始，這樣才能往下滾動 */
         align-items: flex-start; 
+        overflow-y: auto !important; /* 強制開啟捲軸 */
       }
 
       #page-wrap {
-        /* 同樣改為 flex-start，並加入安全距離避免被螢幕邊緣或瀏海遮擋 */
-        align-items: flex-start;
-        min-height: 100dvh;
-        padding-top: max(12px, env(safe-area-inset-top));
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
+        /* 1. 這裡改為 flex-start 是能滑動的關鍵 */
+        align-items: flex-start; 
+        /* 2. 取消 min-height 固定死 100dvh 的限制，讓它可以被內容撐開 */
+        height: auto;
+        min-height: 100dvh; 
+        padding: 20px 0; /* 給上下留點黑邊，不要貼死邊緣 */
       }
 
       #unity-container {
-        /* 讓畫面以「螢幕寬度」為主來延展，高度按 1.6 比例自動計算 */
-        /* 這樣畫面會變大，且超出螢幕高度的部分可以正常往下滑動 */
-        width: calc(100vw - 40px);
-        height: calc((100vw - 40px) / 1.6);
-        max-height: none; 
+        /* 3. 調整比例：寬度不要撐滿，高度限制在螢幕 80% 以內避免全螢幕感 */
+        width: min(90vw, calc((80vh) * 1.6)); 
+        height: auto;
+        aspect-ratio: 960 / 600;
+        max-height: 80vh; 
+        margin: 0 auto; /* 置中容器 */
+      }
+      
+      #unity-footer {
+        /* 橫向時 Footer 建議改回 relative，不然會蓋在遊戲畫面上 */
+        position: relative;
+        margin-top: 10px;
       }
     }
   </style>
