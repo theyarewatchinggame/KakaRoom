@@ -9,49 +9,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <style>
+    /* ======= 全局重置 ======= */
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
-      min-height: 100%;
       background: #000;
-      overflow-x: hidden;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
     }
 
+    /* ======= 桌機版預設排版 ======= */
     body {
       display: flex;
       justify-content: center;
-      align-items: flex-start;
+      align-items: center;
       min-height: 100vh;
-      min-height: 100dvh;
       font-family: Arial, sans-serif;
-      background: #000;
     }
 
     #page-wrap {
       width: 100%;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-      box-sizing: border-box;
-      background: #000;
     }
 
     #unity-container {
       position: relative;
-      width: min(calc(100vw - 40px), calc((100dvh - 40px) * 1.6));
-      height: min(calc(100dvh - 40px), calc((100vw - 40px) / 1.6));
+      width: 960px;
+      height: 600px;
+      max-width: 100%;
       aspect-ratio: 960 / 600;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
       margin: 0 auto;
     }
 
@@ -59,148 +43,50 @@
       width: 100%;
       height: 100%;
       display: block;
-      background: #000;
-      touch-action: manipulation;
     }
 
-    #unity-loading-bar {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      display: none;
-      z-index: 20;
-      width: min(80%, 400px);
-    }
-
-    #unity-warning {
-      position: absolute;
-      left: 50%;
-      top: 10px;
-      transform: translateX(-50%);
-      z-index: 30;
-      width: calc(100% - 20px);
-      max-width: 600px;
-    }
-
-    #unity-footer {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 15;
-    }
-
-    /* 桌機 */
-    @media (min-width: 1025px) {
-      #page-wrap {
-        min-height: 100vh;
-        align-items: center;
-      }
-
-      #unity-container {
-        width: min(calc(100vw - 40px), calc((100vh - 40px) * 1.6));
-        height: min(calc(100vh - 40px), calc((100vw - 40px) / 1.6));
-        max-width: calc(100vw - 40px);
-        max-height: calc(100vh - 40px);
-      }
-    }
-
-    /* 手機 / 平板 */
+    /* ======= 手機與平板 (無論直向或橫向) ======= */
     @media (max-width: 1024px) {
+      
+      html, body {
+        overflow-y: auto !important; /* 1. 絕對保證可以上下滑動 */
+        height: auto !important;
+        display: block !important;   /* 取消 body flex，防止蘋果手機亂縮放 */
+      }
+
       #page-wrap {
-        min-height: 100dvh;
+        display: block;
+        padding: 40px 0; /* 2. 上下留出黑邊，證明它不是滿版全螢幕 */
+      }
+
+      /* 3. 最關鍵：強制覆蓋 Unity 自動加上的全螢幕死鎖屬性 */
+      #unity-container, .unity-mobile {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+        
+        /* 4. 控制大小：寬度佔螢幕 90%，高度自動鎖死 16:10 比例 */
+        width: 90vw !important; 
+        height: auto !important;
+        aspect-ratio: 960 / 600 !important; 
+        margin: 0 auto !important; /* 確保遊戲在正中間 */
+      }
+
+      #unity-canvas {
+        /* 5. 防裁切：絕對定位填滿容器，絕不變形 */
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+
+      #unity-footer {
+        display: none !important; /* 手機版直接隱藏底條，避免干擾畫面 */
       }
     }
-
-    /* ======= 手機直向媒體查詢 (Orientation: Portrait) ======= */
-  @media (orientation: portrait) and (max-width: 1024px) {
-    html, body {
-      overflow-y: auto !important; /* 保留垂直捲軸 */
-      height: auto !important;
-    }
-
-    #page-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100dvh;
-      padding: 20px 0; /* 上下留黑邊 */
-    }
-
-    #unity-container {
-      width: calc(100vw - 40px) !important;
-      /* 關鍵：精確計算寬高，限制最大高度在 70dvh */
-      height: min(calc((100vw - 40px) / 1.6), 70dvh) !important;
-      aspect-ratio: 960 / 600 !important;
-      margin: 0 auto;
-      max-height: none !important;
-      position: relative;
-      background: #000;
-      display: flex; /* 保證內容在容器內置中 */
-      justify-content: center;
-      align-items: center;
-    }
-
-    #unity-canvas {
-      /* 關鍵：強制防裁切，貼合容器 */
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain; /* 確保內容按比例縮放不變形 */
-    }
-  }
-
-  /* ======= 手機橫向媒體查詢 (Orientation: Landscape) ======= */
-  @media (orientation: landscape) and (max-width: 1024px) {
-    html, body {
-      overflow-y: auto !important; /* 強制開啟垂直捲軸 */
-      height: auto !important;
-    }
-
-    #page-wrap {
-      display: flex; /* 使用 flex 置中遊戲 */
-      justify-content: center;
-      align-items: center; /* 置中 */
-      min-height: 100dvh; /* 佔滿螢幕 */
-      padding: 20px; /* 給上下左右留點黑邊 */
-      box-sizing: border-box;
-      background: #000;
-    }
-
-    #unity-container {
-      /* 核心調整：精確計算寬高限制最大高度，不滿版、防裁切 */
-      /* 1. 寬度：限制在 90vw 和 (螢幕高度 90dvh * 比例 1.6) 之間取小 */
-      width: min(90vw, calc(90dvh * 1.6)) !important;
-      /* 2. 高度：限制在螢幕高度 90dvh 和 (90vw / 比例 1.6) 之間取小 */
-      height: min(calc(90vw / 1.6), 90dvh) !important;
-      
-      aspect-ratio: 960 / 600 !important; /* 鎖死 16:10 比例 */
-      max-width: none !important;
-      max-height: none !important;
-      margin: 0 auto; /* 水平置中 */
-      position: relative;
-      background: #000;
-      display: flex; /* 保證內容在容器內置中 */
-      justify-content: center;
-      align-items: center;
-    }
-
-    #unity-canvas {
-      /* 核心調整：強制防裁切，貼合容器 */
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain; /* 確保內容按比例縮放 */
-    }
-    
-    #unity-footer {
-      /* 建議：橫向時 Footer 改為 relative，置於容器下方 */
-      position: relative;
-      margin-top: 15px;
-      text-align: center;
-      width: 100%;
-    }
-  }
-</style>
+  </style>
 </head>
 
 <body>
