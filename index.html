@@ -132,34 +132,37 @@
       }
     }
 
-   /* 手機橫向：不滿版、可上下滑動、防止裁切 */
+   /* 手機橫向：使用終極比例大法，絕對防裁切 */
     @media (orientation: landscape) and (max-width: 1024px) {
       html, body {
-        overflow-y: auto !important; /* 保留垂直捲軸 */
+        overflow-y: auto !important; 
         height: auto !important;
       }
 
       #page-wrap {
         display: block; 
         min-height: 100vh; 
-        padding: 30px 0; /* 上下留點黑邊 */
+        padding: 30px 0; 
         box-sizing: border-box;
       }
 
       #unity-container {
-        width: 85vw; /* 遊戲畫面佔螢幕寬度的 85% */
-        /* 關鍵 1：放棄 height: auto，直接用數學精準計算高度 (85vw * 600/960) */
-        height: calc(85vw * 0.625); 
-        max-height: none; 
+        width: 85vw !important; /* 寬度佔螢幕 85% */
+        height: 0 !important;   /* 高度設為 0，靠 padding 撐開 */
+        /* 600 / 960 = 0.625，用 padding-bottom 強制鎖死 16:10 比例 */
+        padding-bottom: calc(85vw * 0.625) !important; 
+        max-height: none !important;
         margin: 0 auto; 
-        position: relative;
+        position: relative; /* 定位基準點 */
+        overflow: hidden;
       }
 
       #unity-canvas {
-        /* 關鍵 2：加上 !important 強制覆蓋 Unity JS 寫死的 960px */
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain; /* 確保內容按比例縮放不變形 */
+        position: absolute !important; /* 絕對定位 */
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;  /* 強制填滿寬 */
+        height: 100% !important; /* 強制填滿高 */
       }
       
       #unity-footer {
