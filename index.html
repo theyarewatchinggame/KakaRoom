@@ -16,21 +16,20 @@
       min-height: 100%;
       background: #000;
       overflow-x: hidden;
-      overflow-y: auto; /* 保留上下滑動 */
+      overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
 
     body {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* 不鎖死置中，保留頁面往下滑空間 */
+      align-items: flex-start;
       min-height: 100vh;
       min-height: 100dvh;
       font-family: Arial, sans-serif;
       background: #000;
     }
 
-    /* 外層包一層，方便手機直向時仍可往下滑 */
     #page-wrap {
       width: 100%;
       min-height: 100vh;
@@ -45,7 +44,8 @@
 
     #unity-container {
       position: relative;
-      width: min(100vw, calc(100dvh * 1.6));
+      width: min(calc(100vw - 40px), calc((100dvh - 40px) * 1.6));
+      height: min(calc(100dvh - 40px), calc((100vw - 40px) / 1.6));
       aspect-ratio: 960 / 600;
       background: #000;
       display: flex;
@@ -60,7 +60,7 @@
       height: 100%;
       display: block;
       background: #000;
-      touch-action: manipulation; /* 允許正常觸控，不鎖死整頁滾動 */
+      touch-action: manipulation;
     }
 
     #unity-loading-bar {
@@ -99,9 +99,10 @@
       }
 
       #unity-container {
-        width: min(100vw, calc(100vh * 1.6));
-        max-width: 100vw;
-        max-height: 100vh;
+        width: min(calc(100vw - 40px), calc((100vh - 40px) * 1.6));
+        height: min(calc(100vh - 40px), calc((100vw - 40px) / 1.6));
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 40px);
       }
     }
 
@@ -125,13 +126,13 @@
       }
 
       #unity-container {
-        width: 100vw;
-        height: calc(100vw / 1.6);
+        width: calc(100vw - 24px);
+        height: calc((100vw - 24px) / 1.6);
         max-height: none;
       }
     }
 
-    /* 手機橫向：盡量吃滿畫面，但維持比例 */
+    /* 手機橫向：縮小一點，避免被瀏覽器工具列吃掉 */
     @media (orientation: landscape) and (max-width: 1024px) {
       body {
         align-items: center;
@@ -145,8 +146,8 @@
       }
 
       #unity-container {
-        width: min(100vw, calc(100dvh * 1.6));
-        height: min(100dvh, calc(100vw / 1.6));
+        width: min(calc(100vw - 60px), calc((100dvh - 60px) * 1.6));
+        height: min(calc(100dvh - 60px), calc((100vw - 60px) / 1.6));
       }
     }
   </style>
@@ -248,7 +249,6 @@
           unityInstance.SetFullscreen(1);
         };
 
-        // 某些手機旋轉後 canvas 不會立刻刷新，補一次 resize
         setTimeout(() => window.dispatchEvent(new Event("resize")), 300);
       }).catch((message) => {
         alert(message);
