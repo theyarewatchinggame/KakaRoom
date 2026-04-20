@@ -113,65 +113,94 @@
       }
     }
 
-    /* 手機直向：維持比例、不裁切、可上下滑 */
-    @media (orientation: portrait) and (max-width: 1024px) {
-      body {
-        align-items: flex-start;
-      }
-
-      #page-wrap {
-        align-items: flex-start;
-        padding-top: max(12px, env(safe-area-inset-top));
-        padding-bottom: max(12px, env(safe-area-inset-bottom));
-      }
-
-      #unity-container {
-        width: calc(100vw - 24px);
-        height: calc((100vw - 24px) / 1.6);
-        max-height: none;
-      }
+    /* ======= 手機直向媒體查詢 (Orientation: Portrait) ======= */
+  @media (orientation: portrait) and (max-width: 1024px) {
+    html, body {
+      overflow-y: auto !important; /* 保留垂直捲軸 */
+      height: auto !important;
     }
 
-   /* 手機橫向：使用終極比例大法，絕對防裁切 */
-    @media (orientation: landscape) and (max-width: 1024px) {
-      html, body {
-        overflow-y: auto !important; 
-        height: auto !important;
-      }
+    #page-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100dvh;
+      padding: 20px 0; /* 上下留黑邊 */
+    }
 
-      #page-wrap {
-        display: block; 
-        min-height: 100vh; 
-        padding: 30px 0; 
-        box-sizing: border-box;
-      }
+    #unity-container {
+      width: calc(100vw - 40px) !important;
+      /* 關鍵：精確計算寬高，限制最大高度在 70dvh */
+      height: min(calc((100vw - 40px) / 1.6), 70dvh) !important;
+      aspect-ratio: 960 / 600 !important;
+      margin: 0 auto;
+      max-height: none !important;
+      position: relative;
+      background: #000;
+      display: flex; /* 保證內容在容器內置中 */
+      justify-content: center;
+      align-items: center;
+    }
 
-      #unity-container {
-        width: 85vw !important; /* 寬度佔螢幕 85% */
-        height: 0 !important;   /* 高度設為 0，靠 padding 撐開 */
-        /* 600 / 960 = 0.625，用 padding-bottom 強制鎖死 16:10 比例 */
-        padding-bottom: calc(85vw * 0.625) !important; 
-        max-height: none !important;
-        margin: 0 auto; 
-        position: relative; /* 定位基準點 */
-        overflow: hidden;
-      }
+    #unity-canvas {
+      /* 關鍵：強制防裁切，貼合容器 */
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain; /* 確保內容按比例縮放不變形 */
+    }
+  }
 
-      #unity-canvas {
-        position: absolute !important; /* 絕對定位 */
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;  /* 強制填滿寬 */
-        height: 100% !important; /* 強制填滿高 */
-      }
+  /* ======= 手機橫向媒體查詢 (Orientation: Landscape) ======= */
+  @media (orientation: landscape) and (max-width: 1024px) {
+    html, body {
+      overflow-y: auto !important; /* 強制開啟垂直捲軸 */
+      height: auto !important;
+    }
+
+    #page-wrap {
+      display: flex; /* 使用 flex 置中遊戲 */
+      justify-content: center;
+      align-items: center; /* 置中 */
+      min-height: 100dvh; /* 佔滿螢幕 */
+      padding: 20px; /* 給上下左右留點黑邊 */
+      box-sizing: border-box;
+      background: #000;
+    }
+
+    #unity-container {
+      /* 核心調整：精確計算寬高限制最大高度，不滿版、防裁切 */
+      /* 1. 寬度：限制在 90vw 和 (螢幕高度 90dvh * 比例 1.6) 之間取小 */
+      width: min(90vw, calc(90dvh * 1.6)) !important;
+      /* 2. 高度：限制在螢幕高度 90dvh 和 (90vw / 比例 1.6) 之間取小 */
+      height: min(calc(90vw / 1.6), 90dvh) !important;
       
-      #unity-footer {
-        position: relative;
-        margin-top: 15px;
-        text-align: center;
-      }
+      aspect-ratio: 960 / 600 !important; /* 鎖死 16:10 比例 */
+      max-width: none !important;
+      max-height: none !important;
+      margin: 0 auto; /* 水平置中 */
+      position: relative;
+      background: #000;
+      display: flex; /* 保證內容在容器內置中 */
+      justify-content: center;
+      align-items: center;
     }
-  </style>
+
+    #unity-canvas {
+      /* 核心調整：強制防裁切，貼合容器 */
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain; /* 確保內容按比例縮放 */
+    }
+    
+    #unity-footer {
+      /* 建議：橫向時 Footer 改為 relative，置於容器下方 */
+      position: relative;
+      margin-top: 15px;
+      text-align: center;
+      width: 100%;
+    }
+  }
+</style>
 </head>
 
 <body>
